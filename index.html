@@ -48,7 +48,7 @@ const color = d3.scaleSequential(d3.interpolateInferno).domain([0, 30]);
 
 const tooltip = d3.select(".tooltip");
 
-d3.csv("melbourne_temp.csv", d => ({
+d3.csv("melb_temp.csv", d => ({
   year: +d.year,
   month: +d.month,
   temp: +d.mean_temp,
