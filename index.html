@@ -30,7 +30,7 @@
 <body>
 
 <h1 style="text-align:center; font-weight:500; margin-bottom: 0;">
-  Mean Maximum Monthly Temperature – Melbourne (1944–2024)
+  Monthly Temperature – Melbourne (1944–2024)
 </h1>
 
 <svg width="1000" height="600"></svg>
@@ -94,7 +94,7 @@ g.append("text")
   .attr("y", y(yearlyAvg[0].avg) - 6)
   .attr("font-size", "11px")
   .attr("fill", "#444")
-  .text("Yearly Avg");
+  .text(`${yearlyAvg[yearlyAvg.length - 1].avg.toFixed(1)}°C`);
 
 g.append("text")
   .attr("x", x(yearlyAvg[yearlyAvg.length - 1].year) - 4)
