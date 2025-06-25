@@ -52,7 +52,8 @@ const formatMonthYear = d3.timeFormat("%b %Y");
 
 const x = d3.scaleLinear().range([0, width]);
 const y = d3.scaleLinear().range([height, 0]);
-const color = d3.scaleSequential(d3.interpolateViridis).domain([minTemp, maxTemp]);
+const color = d3.scaleSequential(d3.interpolateViridis)
+  .domain(d3.extent(data, d => d.temp));
 
 const tooltip = d3.select(".tooltip");
 
