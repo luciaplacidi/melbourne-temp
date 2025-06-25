@@ -52,9 +52,7 @@ const formatMonthYear = d3.timeFormat("%b %Y");
 
 const x = d3.scaleLinear().range([0, width]);
 const y = d3.scaleLinear().range([height, 0]);
-const color = d3.scaleLinear()
-  .domain([10, 20, 30])
-  .range(["#2c7bb6", "#ffffbf", "#d7191c"]);
+const color = d3.scaleSequential(d3.interpolateViridis).domain([minTemp, maxTemp]);
 
 const tooltip = d3.select(".tooltip");
 
@@ -68,24 +66,42 @@ d3.csv("melb_temp.csv", d => ({
   x.domain(d3.extent(data, d => d.year));
   y.domain([d3.min(data, d => d.temp) - 1, d3.max(data, d => d.temp) + 1]);
 
-  const avgTemp = d3.mean(data, d => d.temp);
+  // 🔢 Group data by year to get yearly averages
+const yearlyAvg = d3.rollups(
+  data,
+  v => d3.mean(v, d => d.temp),
+  d => d.year
+).map(([year, avg]) => ({ year, avg }));
 
-  g.append("line")
-    .attr("x1", 0)
-    .attr("x2", width)
-    .attr("y1", y(avgTemp))
-    .attr("y2", y(avgTemp))
-    .attr("stroke", "#444")
-    .attr("stroke-dasharray", "4 2")
-    .attr("stroke-width", 1);
+// Average line
+const avgLine = d3.line()
+  .curve(d3.curveMonotoneX)
+  .x(d => x(d.year))
+  .y(d => y(d.avg));
 
-  g.append("text")
-    .attr("x", width - 5)
-    .attr("y", y(avgTemp) - 5)
-    .attr("text-anchor", "end")
-    .attr("fill", "#444")
-    .attr("font-size", "11px")
-    .text(`Avg: ${avgTemp.toFixed(1)}°C`);
+g.append("path")
+  .datum(yearlyAvg)
+  .attr("fill", "none")
+  .attr("stroke", "#444")
+  .attr("stroke-width", 1.5)
+  .attr("stroke-dasharray", "2 2")
+  .attr("d", avgLine);
+
+g.append("text")
+  .attr("x", x(yearlyAvg[0].year) + 4)
+  .attr("y", y(yearlyAvg[0].avg) - 6)
+  .attr("font-size", "11px")
+  .attr("fill", "#444")
+  .text("Yearly Avg");
+
+g.append("text")
+  .attr("x", x(yearlyAvg[yearlyAvg.length - 1].year) - 4)
+  .attr("y", y(yearlyAvg[yearlyAvg.length - 1].avg) - 6)
+  .attr("text-anchor", "end")
+  .attr("font-size", "11px")
+  .attr("fill", "#444")
+  .text(`${yearlyAvg[yearlyAvg.length - 1].avg.toFixed(1)}°C`);
+
 
   // Axes
   g.append("g")
