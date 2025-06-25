@@ -29,7 +29,17 @@
 </head>
 <body>
 
+<h1 style="text-align:center; font-weight:500; margin-bottom: 0;">
+    Mean Maximum Monthly Temperature – Melbourne (1944–2024)
+  </h1>
+  
 <svg width="1000" height="600"></svg>
+
+<p style="text-align:center; font-size: 0.9rem; color: #555;">
+    This chart shows Melbourne's monthly mean maximum temperatures from 1944 to 2024.<br>
+    Data source: <a href="https://www.bom.gov.au/climate/data/" target="_blank">bom.gov.au</a>
+  </p>
+  
 <div class="tooltip" style="display:none;"></div>
 
 <script>
@@ -44,7 +54,9 @@ const parseMonth = d3.timeParse("%m"),
 
 const x = d3.scaleLinear().range([0, width]);
 const y = d3.scaleLinear().range([height, 0]);
-const color = d3.scaleSequential(d3.interpolateInferno).domain([0, 30]);
+const color = d3.scaleLinear()
+  .domain([10, 20, 30])
+  .range(["#2c7bb6", "#ffffbf", "#d7191c"]);
 
 const tooltip = d3.select(".tooltip");
 
@@ -72,24 +84,41 @@ d3.csv("melb_temp.csv", d => ({
     .attr("r", 2.5)
     .attr("fill", d => color(d.temp))
     .on("mouseover", function(event, d) {
-      const monthData = data.filter(p => p.month === d.month);
+  const monthData = data.filter(p => p.month === d.month);
 
-      // Show tooltip
-      tooltip.style("display", "block")
-             .html(`${formatMonthYear(d.date)}<br>${d.temp.toFixed(1)}$B!k(BC`)
-             .style("left", (event.pageX + 10) + "px")
-             .style("top", (event.pageY - 28) + "px");
+  // Show tooltip
+  tooltip.style("display", "block")
+         .html(`${formatMonthYear(d.date)}<br>${d.temp.toFixed(1)}°C`)
+         .style("left", (event.pageX + 10) + "px")
+         .style("top", (event.pageY - 28) + "px");
 
-      // Draw line
-      g.append("path")
-        .datum(monthData)
-        .attr("class", "hover-line")
-        .attr("fill", "none")
-        .attr("d", d3.line()
-          .x(p => x(p.year))
-          .y(p => y(p.temp))
-        );
-    })
+  // Remove any existing hover line
+  g.selectAll(".hover-line").remove();
+
+  // Line generator
+  const lineGenerator = d3.line()
+    .x(p => x(p.year))
+    .y(p => y(p.temp));
+
+  // Add and animate line
+  const path = g.append("path")
+    .datum(monthData)
+    .attr("class", "hover-line")
+    .attr("fill", "none")
+    .attr("stroke", "#aaa")
+    .attr("stroke-dasharray", "4 2")
+    .attr("d", lineGenerator);
+
+  const totalLength = path.node().getTotalLength();
+
+  path
+    .attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+    .attr("stroke-dashoffset", totalLength)
+    .transition()
+    .duration(400)
+    .ease(d3.easeLinear)
+    .attr("stroke-dashoffset", 0);
+})
     .on("mousemove", function(event) {
       tooltip.style("left", (event.pageX + 10) + "px")
              .style("top", (event.pageY - 28) + "px");
