@@ -100,7 +100,7 @@ d3.csv("melb_temp.csv", d => ({
     .attr("y", y(first.avg) - 6)
     .attr("font-size", "11px")
     .attr("fill", "#444")
-    .text(`${first.year}: ${first.avg.toFixed(1)}°C`);
+    .text(`${first.avg.toFixed(1)}°C`);
 
   g.append("text")
     .attr("x", x(last.year) - 4)
@@ -108,7 +108,7 @@ d3.csv("melb_temp.csv", d => ({
     .attr("text-anchor", "end")
     .attr("font-size", "11px")
     .attr("fill", "#444")
-    .text(`${last.year}: ${last.avg.toFixed(1)}°C`);
+    .text(`${last.avg.toFixed(1)}°C`);
 
   // 📉 Axes
   g.append("g")
