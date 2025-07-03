@@ -4,6 +4,10 @@ An interactive D3.js chart visualising 80 years of monthly maximum temperatures 
 
 Inspired by [Peter Cook’s UK temperature visualisation](https://app.peterrcook.com/uktemp/), this project explores long-term climate patterns using open Australian weather data.
 
+<p align="center">
+  <img src="https://github.com/luciaplacidi/melbourne-temp/blob/main/graph.png" width="600"/>
+</p>
+
 ---
 
 ### About the Project
